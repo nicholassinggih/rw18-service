@@ -2,7 +2,7 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import multer from 'multer';
-import property from './property.mjs';
+import property from './property.controller.mjs';
 
 import ConnectionPool from './service/data-service.mjs';
 
@@ -18,6 +18,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(upload.array());
 
 //Use the Router on the sub route /movies
-app.use('/property', property);
+app.use('/property', property); 
 
 app.listen(3000);
