@@ -4,6 +4,10 @@ import express from 'express';
 import multer from 'multer';
 import property from './property.mjs';
 
+import sequelize from './service/data-service.mjs';
+
+console.log(sequelize);
+
 var upload = multer();
 const app = express();
 
