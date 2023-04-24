@@ -4,9 +4,10 @@ import express from 'express';
 import multer from 'multer';
 import property from './property.mjs';
 
-import sequelize from './service/data-service.mjs';
+import ConnectionPool from './service/data-service.mjs';
 
-console.log(sequelize);
+let cp = new ConnectionPool();
+cp.authenticate();
 
 var upload = multer();
 const app = express();
