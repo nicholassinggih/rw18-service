@@ -28,7 +28,8 @@ CREATE TABLE `collector` (
   `id` int NOT NULL,
   `nama` varchar(150) NOT NULL,
   `nama_soundex` varchar(200) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `nama_soundex` (`nama_soundex`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -123,7 +124,8 @@ CREATE TABLE `karyawan` (
   `aktif` tinyint DEFAULT NULL,
   `bpjs` tinyint DEFAULT NULL,
   `nama_bagian_soundex` varchar(200) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `nama_bagian_soundex` (`nama_bagian_soundex`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -181,7 +183,8 @@ CREATE TABLE `pembayaran` (
   `nominal` decimal(12,2) DEFAULT NULL,
   `terbayar` tinyint DEFAULT NULL,
   `nama_blok_no_soundex` varchar(200) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `nama_blok_no_soundex` (`nama_blok_no_soundex`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -206,7 +209,8 @@ CREATE TABLE `pemilik` (
   `id` int NOT NULL,
   `nama` varchar(150) NOT NULL,
   `nama_soundex` varchar(200) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `nama_soundex` (`nama_soundex`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -237,7 +241,8 @@ CREATE TABLE `property` (
   `rt` int DEFAULT NULL,
   `collector_id` int DEFAULT NULL,
   `blok_no_soundex` varchar(200) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `blok_no_soundex` (`blok_no_soundex`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -260,4 +265,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-04-23 15:44:29
+-- Dump completed on 2023-04-24 15:18:12
