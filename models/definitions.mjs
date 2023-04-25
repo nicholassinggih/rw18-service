@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
-import ConnectionPool from '/service/data-service.mjs';
-
+import ConnectionPool from '../service/data-service.mjs';
 const cp = new ConnectionPool();
 const sequelize = cp.sequelize;
 
@@ -258,4 +257,13 @@ Honor.belongsTo(Karyawan);
 MovementHistory.belongsTo(Property);
 MovementHistory.belongsTo(Pemilik);
 
-module.exports = User;
+export {
+  Collector,
+  FeeHistory,
+  Honor,
+  Karyawan,
+  MovementHistory,
+  Pembayaran,
+  Pemilik,
+  Property
+};
