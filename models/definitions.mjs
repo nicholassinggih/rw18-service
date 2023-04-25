@@ -62,7 +62,9 @@ const Honor = sequelize.define('Honor', {
       allowNull: true
   }
 }, {
-tableName: 'honor'
+    underscored: true,
+    timestamps: false,
+    tableName: 'honor'
 });
 
 const Karyawan = sequelize.define('Karyawan', {
@@ -104,6 +106,9 @@ const Karyawan = sequelize.define('Karyawan', {
       allowNull: true
   }
 }, {
+    underscored: true,
+    timestamps: false,
+    
 tableName: 'karyawan'
 });
 
@@ -122,6 +127,9 @@ const FeeHistory = sequelize.define('FeeHistory', {
       allowNull: true
   }
 }, {
+    underscored: true,
+    timestamps: false,
+    
 tableName: 'fee_history'
 });
 
@@ -136,6 +144,9 @@ const MovementHistory = sequelize.define('MovementHistory', {
       allowNull: true
   }
 }, {
+    underscored: true,
+    timestamps: false,
+    
 tableName: 'movement_history'
 });
 
@@ -156,6 +167,9 @@ const Collector = sequelize.define('Collector', {
       allowNull: true
   }
 }, {
+    underscored: true,
+    timestamps: false,
+    
 tableName: 'collector'
 });
 
@@ -198,6 +212,9 @@ const Pembayaran = sequelize.define('Pembayaran', {
       allowNull: true
   }
 }, {
+    underscored: true,
+    timestamps: false,
+    
 tableName: 'pembayaran'
 });
 
@@ -216,6 +233,9 @@ const Pemilik = sequelize.define('Pemilik', {
         allowNull: true
     },
 }, {
+    underscored: true,
+    timestamps: false,
+    
   tableName: 'pemilik'
 });
 
@@ -246,6 +266,9 @@ const Property = sequelize.define('Property', {
         allowNull: true
     }
 }, {
+    underscored: true,
+    timestamps: false,
+    
     tableName: 'property'
 });
 
@@ -258,12 +281,13 @@ MovementHistory.belongsTo(Property);
 MovementHistory.belongsTo(Pemilik);
 
 export {
-  Collector,
-  FeeHistory,
-  Honor,
-  Karyawan,
-  MovementHistory,
-  Pembayaran,
-  Pemilik,
-  Property
+    Collector,
+    FeeHistory,
+    Honor,
+    Karyawan,
+    MovementHistory,
+    Pembayaran,
+    Pemilik,
+    Property
 };
+
