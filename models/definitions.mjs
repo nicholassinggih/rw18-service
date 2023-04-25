@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import ConnectionPool from '../service/data-service.mjs';
+import ConnectionPool from '../service/connection-pool.mjs';
 const cp = new ConnectionPool();
 const sequelize = cp.sequelize;
 
@@ -95,10 +95,6 @@ const Karyawan = sequelize.define('Karyawan', {
   },
   bpjs: {
       type: DataTypes.BOOLEAN,
-      allowNull: true
-  },
-  terbayar: {
-      type: DataTypes.DECIMAL,
       allowNull: true
   },
   namaBagianSoundex: {
@@ -263,6 +259,10 @@ const Property = sequelize.define('Property', {
     },
     rt: {
         type: DataTypes.TINYINT,
+        allowNull: true
+    },
+    blokNoSoundex: {
+        type: DataTypes.STRING,
         allowNull: true
     }
 }, {
