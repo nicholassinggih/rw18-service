@@ -4,10 +4,11 @@ import express from 'express';
 import multer from 'multer';
 import property from './property.controller.mjs';
 
-import ConnectionPool from './service/data-service.mjs';
+import DbStartup from './service/db-startup.mjs';
 
-let cp = new ConnectionPool();
-cp.authenticate();
+const dbStartup = new DbStartup();
+
+console.log(dbStartup);
 
 var upload = multer();
 const app = express();
