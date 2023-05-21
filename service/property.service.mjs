@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import * as Models from '../models/definitions.mjs';
 import svc from '../util.mjs';
 
@@ -13,14 +13,18 @@ class PropertyService {
             [Sequelize.literal('MATCH (Pemilik.nama_soundex) AGAINST(?)'), 'relevance']
           ]
         },
-        replacements: [`*${keywordSoundex}*`, `*${keywordSoundex}*`],
+        replacements: [`*${keywordSoundex}*`, `*${keywordSoundex}*`, `%${keyword}%`],
         include: [
           {
             model: Models.Pemilik, 
-            
           }
         ],
-        where: Sequelize.literal('MATCH (Pemilik.nama_soundex) AGAINST(?)'),
+        where: {
+          [Op.or]: [
+            Sequelize.literal('MATCH (Pemilik.nama_soundex) AGAINST(?)'),
+            Sequelize.literal('Pemilik.nama LIKE ?')
+          ]
+        },
         order: [
           ['relevance', 'DESC']
         ]
