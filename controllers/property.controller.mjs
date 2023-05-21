@@ -1,6 +1,5 @@
 import express from 'express';
-import { soundex } from 'soundex-code';
-import util from './util.mjs';
+import PropertyService from '../service/property.service.mjs';
 
 const router = express.Router();
 var movies = [
@@ -16,22 +15,11 @@ router.get('/', function(req, res){
 
 
  
-router.get('/test', function(req, res){
-   res.json({
-      a: util.soundexText(`
+router.get('/search', async function(req, res){
 
-      fej  ifje jfi   f ewioa  fwea
-   wjafoiewaj  feowia 
-   
-   gweaiogjewi 
-   
-   gweajigew
-   gwegawegew gwer gwe ag weag ewgaew 
-    gweageawg gewagewa    g wea geawa`),
-      b: soundex('f'),
-      c: soundex('fee'),
-      d: soundex('feww'),
-   });
+   const ps = new PropertyService();
+   res.json( await ps.search(req.query.keyword) );
+
 });
 
 export default router;

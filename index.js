@@ -2,7 +2,7 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import multer from 'multer';
-import property from './property.controller.mjs';
+import property from './controllers/property.controller.mjs';
 
 import DbStartup from './service/db-startup.mjs';
 
