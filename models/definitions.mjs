@@ -272,13 +272,16 @@ const Property = sequelize.define('Property', {
     tableName: 'property'
 });
 
-Property.belongsTo(Pemilik);
+Property.belongsTo(Pemilik, { foreignKey: 'pemilikId'});
 Property.belongsTo(Collector);
 Pembayaran.belongsTo(Pemilik);
 FeeHistory.belongsTo(Property);
 Honor.belongsTo(Karyawan);
 MovementHistory.belongsTo(Property);
 MovementHistory.belongsTo(Pemilik);
+
+Pemilik.hasMany(Property, {foreignKey: 'pemilikId'});
+
 
 export {
     Collector,
