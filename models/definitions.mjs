@@ -273,7 +273,7 @@ const Property = sequelize.define('Property', {
 });
 
 Property.belongsTo(Pemilik, { foreignKey: 'pemilikId'});
-Property.belongsTo(Collector);
+Property.belongsTo(Collector, {foreignKey: 'collectorId'});
 Pembayaran.belongsTo(Pemilik);
 FeeHistory.belongsTo(Property);
 Honor.belongsTo(Karyawan);
@@ -281,7 +281,7 @@ MovementHistory.belongsTo(Property);
 MovementHistory.belongsTo(Pemilik);
 
 Pemilik.hasMany(Property, {foreignKey: 'pemilikId'});
-
+Collector.hasMany(Property, {foreignKey: 'collectorId'})
 
 export {
     Collector,
