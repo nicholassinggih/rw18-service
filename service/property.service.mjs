@@ -13,15 +13,18 @@ class PropertyService {
             [Sequelize.literal('MATCH (Pemilik.nama_soundex) AGAINST(?)'), 'relevance']
           ]
         },
-        replacements: [`*${keywordSoundex}*`, `*${keywordSoundex}*`, `*${keywordSoundex}*`, `%${keyword}%`],
         include: [
           {
             model: Models.Pemilik, 
+          },
+          {
+            model: Models.Collector
           }
         ],
         where: {
           [Op.or]: [
             Sequelize.literal('MATCH (Pemilik.nama_soundex) AGAINST(?)'),
+            Sequelize.literal('MATCH (Collector.nama_soundex) AGAINST(?)'),
             Sequelize.literal('MATCH (Property.blok_no_soundex) AGAINST(?)'),
             Sequelize.literal('Pemilik.nama LIKE ?'),
             ...(keyword?.split(/\s+/).flatMap(val => {
@@ -34,7 +37,8 @@ class PropertyService {
         },
         order: [
           ['relevance', 'DESC']
-        ]
+        ],
+        replacements: [`*${keywordSoundex}*`, `*${keywordSoundex}*`, `*${keywordSoundex}*`, `*${keywordSoundex}*`, `%${keyword}%`],
         
       }) 
     } catch(err) {
