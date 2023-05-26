@@ -6,11 +6,12 @@ class PropertyService {
   async search(keyword) {
     var res = null;
     const keywordSoundex = svc.soundexText(keyword);
+    const prefixedKeywords = svc.breakIntoWords(keywordSoundex).map(w => `+${w}`).join(' ');
     try {
       res = await Models.Property.findAll({
         attributes: {
           include: [
-            [Sequelize.literal('MATCH (Pemilik.nama_soundex) AGAINST(?)'), 'relevance']
+            [Sequelize.literal('MATCH (Property.property_soundex) AGAINST(? IN BOOLEAN MODE)'), 'relevance']
           ]
         },
         include: [
@@ -23,26 +24,27 @@ class PropertyService {
         ],
         where: {
           [Op.or]: [
-            Sequelize.literal('MATCH (Pemilik.nama_soundex) AGAINST(?)'),
+            //Sequelize.literal('MATCH (Pemilik.nama_soundex) AGAINST(?)'),
             Sequelize.literal('MATCH (Collector.nama_soundex) AGAINST(?)'),
-            // Sequelize.literal('MATCH (Property.blok_no_soundex) AGAINST(?)'),
+            Sequelize.literal('MATCH (Property.property_soundex) AGAINST(? IN BOOLEAN MODE)'),
             Sequelize.literal('Pemilik.nama LIKE ?'),
-            ...(keyword?.split(/\s+/).flatMap(val => {
+            /* ...(keyword?.split(/\s+/).flatMap(val => {
               return [
                 Sequelize.literal(`Property.blok LIKE '${val}%'`),
                 Sequelize.literal(`Property.no LIKE '${val}%'`)
               ];
-            }))
+            })) */
           ]
         },
         order: [
           ['relevance', 'DESC']
         ],
-        replacements: [`*${keywordSoundex}*`, 
-        `*${keywordSoundex}*`, 
-        // `*${keywordSoundex}*`, 
-        `*${keywordSoundex}*`, 
-        `%${keyword}%`],
+        replacements: [
+          // `*${keywordSoundex}*`, 
+          `${prefixedKeywords}`, 
+          `*${keywordSoundex}*`, 
+          `${prefixedKeywords}`, 
+          `%${keyword}%`],
         
       }) 
     } catch(err) {
@@ -60,7 +62,7 @@ class PropertyService {
           nominal: 1,
           komersial: false,
           rt: 1,
-          blokNoSoundex: 'TEST'
+          propertySoundex: 'TEST'
         }); 
       } catch (err) {
         console.log(err);

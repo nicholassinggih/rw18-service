@@ -261,7 +261,7 @@ const Property = sequelize.define('Property', {
         type: DataTypes.TINYINT,
         allowNull: true
     },
-    blokNoSoundex: {
+    propertySoundex: {
         type: DataTypes.STRING,
         allowNull: true
     }

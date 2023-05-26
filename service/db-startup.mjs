@@ -58,15 +58,20 @@ class DbStartup {
         });
         
         const propertyList = await Models.Property.findAll({
+            include: [
+                {
+                    model: Models.Pemilik
+                }
+            ],
             where: {
-                blokNoSoundex: {
+                propertySoundex: {
                     [Op.is]: null
                 }
             }
         });
         
         propertyList.forEach(k => {
-            k.blokNoSoundex = svc.soundexText(`${k.blok} ${k.no}`); 
+            k.propertySoundex = svc.soundexText(`${k.Pemilik?.nama ?? ''} ${k.blok} ${k.no}`); 
             k.save();
         });
     }
