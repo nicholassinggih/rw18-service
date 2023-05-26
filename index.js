@@ -1,9 +1,9 @@
 
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import express from 'express';
 import multer from 'multer';
 import property from './controllers/property.controller.mjs';
-
 import DbStartup from './service/db-startup.mjs';
 
 const dbStartup = new DbStartup();
@@ -13,7 +13,7 @@ console.log(dbStartup);
 var upload = multer();
 const app = express();
 
-
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(upload.array());
