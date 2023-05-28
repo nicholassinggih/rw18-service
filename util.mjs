@@ -1,4 +1,5 @@
-import { soundex } from 'soundex-code';
+import { doubleMetaphone } from 'double-metaphone';
+
 const svc = {};
 
 svc.breakIntoWords = (str) => {
@@ -6,7 +7,7 @@ svc.breakIntoWords = (str) => {
 }
 
 svc.encodeText = (text) => {
-    return svc.breakIntoWords(text).map(element => soundex(element)).join(" ");
+    return svc.breakIntoWords(text).map(element => doubleMetaphone(element)[1]).join(" ");
 }
 
 export default svc;

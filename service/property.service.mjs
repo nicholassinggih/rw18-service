@@ -11,7 +11,8 @@ class PropertyService {
       res = await Models.Property.findAll({
         attributes: {
           include: [
-            [Sequelize.literal('MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)'), 'relevance']
+            [Sequelize.literal('MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)'), 'relevance'],
+            [Sequelize.literal('MATCH (Pemilik.nama) AGAINST(? IN BOOLEAN MODE)'), 'pemilik_relevance']
           ]
         },
         include: [
@@ -37,14 +38,17 @@ class PropertyService {
           ]
         },
         order: [
-          ['relevance', 'DESC']
+          ['relevance', 'DESC'],
+          ['pemilik_relevance', 'DESC']
         ],
         replacements: [
           // `*${keywordSoundex}*`, 
           `${prefixedKeywords}`, 
+          `%${keyword}%`,
           `*${keywordSoundex}*`, 
           `${prefixedKeywords}`, 
-          `%${keyword}%`],
+          `%${keyword}%`
+        ],
         
       }) 
     } catch(err) {

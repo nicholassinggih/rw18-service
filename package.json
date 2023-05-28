@@ -14,6 +14,7 @@
     "@develoka/angka-terbilang-js": "^1.4.2",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
+    "double-metaphone": "^2.0.1",
     "express": "^4.18.2",
     "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
