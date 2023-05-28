@@ -11,7 +11,7 @@ class PropertyService {
       res = await Models.Property.findAll({
         attributes: {
           include: [
-            [Sequelize.literal('MATCH (Property.property_soundex) AGAINST(? IN BOOLEAN MODE)'), 'relevance']
+            [Sequelize.literal('MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)'), 'relevance']
           ]
         },
         include: [
@@ -25,8 +25,8 @@ class PropertyService {
         where: {
           [Op.or]: [
             //Sequelize.literal('MATCH (Pemilik.nama_soundex) AGAINST(?)'),
-            Sequelize.literal('MATCH (Collector.nama_soundex) AGAINST(?)'),
-            Sequelize.literal('MATCH (Property.property_soundex) AGAINST(? IN BOOLEAN MODE)'),
+            Sequelize.literal('MATCH (Collector.phonetic) AGAINST(?)'),
+            Sequelize.literal('MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)'),
             Sequelize.literal('Pemilik.nama LIKE ?'),
             /* ...(keyword?.split(/\s+/).flatMap(val => {
               return [
