@@ -29,7 +29,7 @@ CREATE TABLE `collector` (
   `nama` varchar(150) NOT NULL,
   `phonetic` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  FULLTEXT KEY `phonetic` (`phonetic`) /*!80000 INVISIBLE */,
+  FULLTEXT KEY `phonetic` (`phonetic`),
   FULLTEXT KEY `name` (`nama`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -126,7 +126,7 @@ CREATE TABLE `karyawan` (
   `bpjs` tinyint DEFAULT NULL,
   `phonetic` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  FULLTEXT KEY `phonetic` (`phonetic`) /*!80000 INVISIBLE */,
+  FULLTEXT KEY `phonetic` (`phonetic`),
   FULLTEXT KEY `name` (`nama`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -186,7 +186,7 @@ CREATE TABLE `pembayaran` (
   `terbayar` tinyint DEFAULT NULL,
   `phonetic` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  FULLTEXT KEY `phonetic` (`phonetic`) /*!80000 INVISIBLE */,
+  FULLTEXT KEY `phonetic` (`phonetic`),
   FULLTEXT KEY `name` (`nama`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -213,7 +213,7 @@ CREATE TABLE `pemilik` (
   `nama` varchar(150) NOT NULL,
   `phonetic` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  FULLTEXT KEY `phonetic` (`phonetic`) /*!80000 INVISIBLE */,
+  FULLTEXT KEY `phonetic` (`phonetic`),
   FULLTEXT KEY `name` (`nama`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -269,4 +269,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-28 22:29:19
+-- Dump completed on 2023-05-28 22:49:16
