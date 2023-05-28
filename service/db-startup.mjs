@@ -14,7 +14,7 @@ class DbStartup {
         });
         
         karyawanList.forEach(k => {
-            k.namaBagianSoundex = svc.soundexText(`${k.nama} ${k.bagian}`);
+            k.namaBagianSoundex = svc.encodeText(`${k.nama} ${k.bagian}`);
             k.save();
         });
         
@@ -27,7 +27,7 @@ class DbStartup {
         });
         
         collectorList.forEach(k => {
-            k.namaSoundex = svc.soundexText(`${k.nama}`);
+            k.namaSoundex = svc.encodeText(`${k.nama}`);
             k.save();
         });
         
@@ -40,7 +40,7 @@ class DbStartup {
         });
         
         pembayaranList.forEach(k => {
-            k.namaBlokNoSoundex = svc.soundexText(`${k.nama} ${k.blok} ${k.no}`);
+            k.namaBlokNoSoundex = svc.encodeText(`${k.nama} ${k.blok} ${k.no}`);
             k.save();
         });
         
@@ -53,7 +53,7 @@ class DbStartup {
         });
         
         pemilikList.forEach(k => {
-            k.namaSoundex = svc.soundexText(`${k.nama}`);
+            k.namaSoundex = svc.encodeText(`${k.nama}`);
             k.save();
         });
         
@@ -71,7 +71,7 @@ class DbStartup {
         });
         
         propertyList.forEach(k => {
-            k.propertySoundex = svc.soundexText(`${k.Pemilik?.nama ?? ''} ${k.blok} ${k.no}`); 
+            k.propertySoundex = svc.encodeText(`${k.Pemilik?.nama ?? ''} ${k.blok} ${k.no}`); 
             k.save();
         });
     }

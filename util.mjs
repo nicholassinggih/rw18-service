@@ -5,7 +5,7 @@ svc.breakIntoWords = (str) => {
     return str?.trim().split(/\s+/g) || [];
 }
 
-svc.soundexText = (text) => {
+svc.encodeText = (text) => {
     return svc.breakIntoWords(text).map(element => soundex(element)).join(" ");
 }
 

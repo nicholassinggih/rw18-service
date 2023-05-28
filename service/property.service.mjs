@@ -5,7 +5,7 @@ import svc from '../util.mjs';
 class PropertyService {
   async search(keyword) {
     var res = null;
-    const keywordSoundex = svc.soundexText(keyword);
+    const keywordSoundex = svc.encodeText(keyword);
     const prefixedKeywords = svc.breakIntoWords(keywordSoundex).map(w => `+${w}`).join(' ');
     try {
       res = await Models.Property.findAll({
