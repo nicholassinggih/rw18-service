@@ -4,19 +4,27 @@ import svc from '../util.mjs';
 
 class PropertyService {
   async search(keyword) {
-    var res = null;
-    const keywordSoundex = svc.encodeText(keyword);
-    const prefixedKeywords = svc.breakIntoWords(keywordSoundex).map(w => `+${w}`).join(' ');
+    var res = [];
+    if (svc.isEmptyString(keyword)) return res;
+
+    const encodedKeywords = svc.encodeText(keyword);
+    const prefixedKeywords = svc.breakIntoWords(encodedKeywords).map(w => `+${w}`).join(' ');
+    const blokNoMatchAttr = (svc.breakIntoWords(keyword).flatMap(val => [
+      `Property.blok LIKE '${val}%'`,
+      `Property.no LIKE '${val}%'`
+      ]
+    )).join(" OR ");
+
     try {
       res = await Models.Property.findAll({
         attributes: {
           include: [
             [Sequelize.literal(`((Pemilik.nama LIKE ?) * 2) + 
-              (MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)) + 
+              (${blokNoMatchAttr}) * 2 + 
+              ${encodedKeywords.length ? '(MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE) * 1.2) + ' : ''} 
+              ${encodedKeywords.length ? '(MATCH (Collector.phonetic) AGAINST(? IN BOOLEAN MODE)) + ' : ''} 
               (MATCH (Pemilik.nama) AGAINST(? IN BOOLEAN MODE))`), 'relevance'],
-            // [Sequelize.literal('MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)'), 'relevance'],
-            // [Sequelize.literal('MATCH (Pemilik.nama) AGAINST(? IN BOOLEAN MODE)'), 'pemilik_relevance']
-
+            
           ]
         },
         include: [
@@ -30,8 +38,8 @@ class PropertyService {
         where: {
           [Op.or]: [
             //Sequelize.literal('MATCH (Pemilik.nama_soundex) AGAINST(?)'),
-            Sequelize.literal('MATCH (Collector.phonetic) AGAINST(?)'),
-            Sequelize.literal('MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)'),
+            encodedKeywords.length? Sequelize.literal('MATCH (Collector.phonetic) AGAINST(?)') : null,
+            encodedKeywords.length? Sequelize.literal('MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)') : null,
             Sequelize.literal('Pemilik.nama LIKE ?'),
             ...(svc.breakIntoWords(keyword).flatMap(val => {
               return [
@@ -46,13 +54,19 @@ class PropertyService {
           ['relevance', 'DESC'],
           // ['pemilik_relevance', 'DESC']
         ],
-        replacements: [
-          // `*${keywordSoundex}*`, 
+        replacements: encodedKeywords.length?  [
           `%${keyword}%`,
           `${prefixedKeywords}`, 
-          `%${keyword}%`,
-          `*${keywordSoundex}*`, 
           `${prefixedKeywords}`, 
+          `${keyword}`,
+
+          `${prefixedKeywords}`, 
+          `${prefixedKeywords}`, 
+          `%${keyword}%`,
+
+        ] : [
+          `%${keyword}%`,
+          `${keyword}`,
           `%${keyword}%`
         ],
         
