@@ -7,7 +7,9 @@ svc.breakIntoWords = (str) => {
 }
 
 svc.encodeText = (text) => {
-    return svc.breakIntoWords(text).map(element => doubleMetaphone(element)[1]).join(" ");
+    return svc.breakIntoWords(text).map(element => doubleMetaphone(element)[1])
+        .map(w => w === "A"? "AA" : w)
+        .join(" ");
 }
 
 export default svc;
