@@ -4,13 +4,27 @@ import svc from '../util.mjs';
 
 class PropertyService {
   async search(keyword) {
-    var res = null;
-    const keywordSoundex = svc.soundexText(keyword);
+    var res = [];
+    if (svc.isEmptyString(keyword)) return res;
+
+    const encodedKeywords = svc.encodeText(keyword);
+    const prefixedKeywords = svc.breakIntoWords(encodedKeywords).map(w => `+${w}`).join(' ');
+    const blokNoMatchAttr = (svc.breakIntoWords(keyword).flatMap(val => [
+      `Property.blok LIKE '${val}%'`,
+      `Property.no LIKE '${val}%'`
+      ]
+    )).join(" OR ");
+
     try {
       res = await Models.Property.findAll({
         attributes: {
           include: [
-            [Sequelize.literal('MATCH (Pemilik.nama_soundex) AGAINST(?)'), 'relevance']
+            [Sequelize.literal(`((Pemilik.nama LIKE ?) * 2) + 
+              (${blokNoMatchAttr}) * 2 + 
+              ${encodedKeywords.length ? '(MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE) * 1.2) + ' : ''} 
+              ${encodedKeywords.length ? '(MATCH (Collector.phonetic) AGAINST(? IN BOOLEAN MODE)) + ' : ''} 
+              (MATCH (Pemilik.nama) AGAINST(? IN BOOLEAN MODE))`), 'relevance'],
+            
           ]
         },
         include: [
@@ -23,11 +37,11 @@ class PropertyService {
         ],
         where: {
           [Op.or]: [
-            Sequelize.literal('MATCH (Pemilik.nama_soundex) AGAINST(?)'),
-            Sequelize.literal('MATCH (Collector.nama_soundex) AGAINST(?)'),
-            // Sequelize.literal('MATCH (Property.blok_no_soundex) AGAINST(?)'),
+            //Sequelize.literal('MATCH (Pemilik.nama_soundex) AGAINST(?)'),
+            encodedKeywords.length? Sequelize.literal('MATCH (Collector.phonetic) AGAINST(?)') : null,
+            encodedKeywords.length? Sequelize.literal('MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)') : null,
             Sequelize.literal('Pemilik.nama LIKE ?'),
-            ...(keyword?.split(/\s+/).flatMap(val => {
+            ...(svc.breakIntoWords(keyword).flatMap(val => {
               return [
                 Sequelize.literal(`Property.blok LIKE '${val}%'`),
                 Sequelize.literal(`Property.no LIKE '${val}%'`)
@@ -36,13 +50,25 @@ class PropertyService {
           ]
         },
         order: [
-          ['relevance', 'DESC']
+          // ['exact_match', 'DESC'],
+          ['relevance', 'DESC'],
+          // ['pemilik_relevance', 'DESC']
         ],
-        replacements: [`*${keywordSoundex}*`, 
-        `*${keywordSoundex}*`, 
-        // `*${keywordSoundex}*`, 
-        `*${keywordSoundex}*`, 
-        `%${keyword}%`],
+        replacements: encodedKeywords.length?  [
+          `%${keyword}%`,
+          `${prefixedKeywords}`, 
+          `${prefixedKeywords}`, 
+          `${keyword}`,
+
+          `${prefixedKeywords}`, 
+          `${prefixedKeywords}`, 
+          `%${keyword}%`,
+
+        ] : [
+          `%${keyword}%`,
+          `${keyword}`,
+          `%${keyword}%`
+        ],
         
       }) 
     } catch(err) {
@@ -60,7 +86,7 @@ class PropertyService {
           nominal: 1,
           komersial: false,
           rt: 1,
-          blokNoSoundex: 'TEST'
+          propertySoundex: 'TEST'
         }); 
       } catch (err) {
         console.log(err);

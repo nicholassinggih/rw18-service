@@ -97,7 +97,7 @@ const Karyawan = sequelize.define('Karyawan', {
       type: DataTypes.BOOLEAN,
       allowNull: true
   },
-  namaBagianSoundex: {
+  phonetic: {
       type: DataTypes.STRING,
       allowNull: true
   }
@@ -158,7 +158,7 @@ const Collector = sequelize.define('Collector', {
       type: DataTypes.STRING,
       allowNull: true
   },
-  namaSoundex: {
+  phonetic: {
       type: DataTypes.STRING,
       allowNull: true
   }
@@ -203,7 +203,7 @@ const Pembayaran = sequelize.define('Pembayaran', {
       type: DataTypes.DECIMAL,
       allowNull: true
   },
-  namaBlokNoSoundex: {
+  phonetic: {
       type: DataTypes.STRING,
       allowNull: true
   }
@@ -224,7 +224,7 @@ const Pemilik = sequelize.define('Pemilik', {
         type: DataTypes.STRING,
         allowNull: true
     },
-    namaSoundex: {
+    phonetic: {
         type: DataTypes.STRING,
         allowNull: true
     },
@@ -261,7 +261,7 @@ const Property = sequelize.define('Property', {
         type: DataTypes.TINYINT,
         allowNull: true
     },
-    blokNoSoundex: {
+    phonetic: {
         type: DataTypes.STRING,
         allowNull: true
     }

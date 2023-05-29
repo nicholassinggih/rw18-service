@@ -7,66 +7,71 @@ class DbStartup {
     initializeSoundex = async function() {
         const karyawanList = await Models.Karyawan.findAll({
             where: {
-                namaBagianSoundex: {
+                phonetic: {
                     [Op.is]: null
                 }
             }
         });
         
         karyawanList.forEach(k => {
-            k.namaBagianSoundex = svc.soundexText(`${k.nama} ${k.bagian}`);
+            k.phonetic = svc.encodeText(`${k.nama} ${k.bagian}`);
             k.save();
         });
         
         const collectorList = await Models.Collector.findAll({
             where: {
-                namaSoundex: {
+                phonetic: {
                     [Op.is]: null
                 }
             }
         });
         
         collectorList.forEach(k => {
-            k.namaSoundex = svc.soundexText(`${k.nama}`);
+            k.phonetic = svc.encodeText(`${k.nama}`);
             k.save();
         });
         
         const pembayaranList = await Models.Pembayaran.findAll({
             where: {
-                namaBlokNoSoundex: {
+                phonetic: {
                     [Op.is]: null
                 }
             }
         });
         
         pembayaranList.forEach(k => {
-            k.namaBlokNoSoundex = svc.soundexText(`${k.nama} ${k.blok} ${k.no}`);
+            k.phonetic = svc.encodeText(`${k.nama} ${k.blok} ${k.no}`);
             k.save();
         });
         
         const pemilikList = await Models.Pemilik.findAll({
             where: {
-                namaSoundex: {
+                phonetic: {
                     [Op.is]: null
                 }
             }
         });
         
         pemilikList.forEach(k => {
-            k.namaSoundex = svc.soundexText(`${k.nama}`);
+            k.phonetic = svc.encodeText(`${k.nama}`);
             k.save();
         });
         
         const propertyList = await Models.Property.findAll({
+            include: [
+                {
+                    model: Models.Pemilik
+                }
+            ],
             where: {
-                blokNoSoundex: {
+                phonetic: {
                     [Op.is]: null
                 }
             }
         });
         
         propertyList.forEach(k => {
-            k.blokNoSoundex = svc.soundexText(`${k.blok} ${k.no}`); 
+            k.phonetic = svc.encodeText(`${k.Pemilik?.nama ?? ''} ${k.blok} ${k.no}`); 
             k.save();
         });
     }
