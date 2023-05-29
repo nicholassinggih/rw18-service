@@ -11,9 +11,12 @@ class PropertyService {
       res = await Models.Property.findAll({
         attributes: {
           include: [
-            [Sequelize.literal('Pemilik.nama LIKE ?'), 'exact_match'],
-            [Sequelize.literal('MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)'), 'relevance'],
-            [Sequelize.literal('MATCH (Pemilik.nama) AGAINST(? IN BOOLEAN MODE)'), 'pemilik_relevance']
+            [Sequelize.literal(`((Pemilik.nama LIKE ?) * 2) + 
+              (MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)) + 
+              (MATCH (Pemilik.nama) AGAINST(? IN BOOLEAN MODE))`), 'relevance'],
+            // [Sequelize.literal('MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)'), 'relevance'],
+            // [Sequelize.literal('MATCH (Pemilik.nama) AGAINST(? IN BOOLEAN MODE)'), 'pemilik_relevance']
+
           ]
         },
         include: [
@@ -30,18 +33,18 @@ class PropertyService {
             Sequelize.literal('MATCH (Collector.phonetic) AGAINST(?)'),
             Sequelize.literal('MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)'),
             Sequelize.literal('Pemilik.nama LIKE ?'),
-            /* ...(keyword?.split(/\s+/).flatMap(val => {
+            ...(svc.breakIntoWords(keyword).flatMap(val => {
               return [
                 Sequelize.literal(`Property.blok LIKE '${val}%'`),
                 Sequelize.literal(`Property.no LIKE '${val}%'`)
               ];
-            })) */
+            }))
           ]
         },
         order: [
-          ['exact_match', 'DESC'],
+          // ['exact_match', 'DESC'],
           ['relevance', 'DESC'],
-          ['pemilik_relevance', 'DESC']
+          // ['pemilik_relevance', 'DESC']
         ],
         replacements: [
           // `*${keywordSoundex}*`, 
