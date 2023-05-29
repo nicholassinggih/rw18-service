@@ -19,7 +19,7 @@ class PropertyService {
       res = await Models.Property.findAll({
         attributes: {
           include: [
-            [Sequelize.literal(`((Pemilik.nama LIKE ?) * 2) + 
+            [Sequelize.literal(`((Pemilik.nama LIKE ?) * 7) + 
               (${blokNoMatchAttr}) * 2 + 
               ${encodedKeywords.length ? '(MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE) * 1.2) + ' : ''} 
               ${encodedKeywords.length ? '(MATCH (Collector.phonetic) AGAINST(? IN BOOLEAN MODE)) + ' : ''} 
