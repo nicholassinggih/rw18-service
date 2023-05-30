@@ -3,7 +3,7 @@ import * as Models from '../models/definitions.mjs';
 import svc from '../util.mjs';
 
 class PropertyService {
-  async search(keyword) {
+  async search(keyword, offset, limit) {
     var res = [];
     if (svc.isEmptyString(keyword)) return res;
 
@@ -16,14 +16,16 @@ class PropertyService {
     )).join(" OR ");
 
     try {
-      res = await Models.Property.findAll({
+      res = await Models.Property.findAndCountAll({
+        offset: +offset,
+        limit: +limit,
         attributes: {
           include: [
-            [Sequelize.literal(`((Pemilik.nama LIKE ?) * 7) + 
+            [Sequelize.literal(`((Pemilik.nama LIKE '%${keyword}%') * 7) + 
               (${blokNoMatchAttr}) * 2 + 
-              ${encodedKeywords.length ? '(MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE) * 1.2) + ' : ''} 
-              ${encodedKeywords.length ? '(MATCH (Collector.phonetic) AGAINST(? IN BOOLEAN MODE)) + ' : ''} 
-              (MATCH (Pemilik.nama) AGAINST(? IN BOOLEAN MODE))`), 'relevance'],
+              ${encodedKeywords.length ? "(MATCH (Property.phonetic) AGAINST('" + prefixedKeywords + "' IN BOOLEAN MODE) * 1.2) + " : ''} 
+              ${encodedKeywords.length ? "(MATCH (Collector.phonetic) AGAINST('" + prefixedKeywords + "' IN BOOLEAN MODE)) + " : ''} 
+              (MATCH (Pemilik.nama) AGAINST('${keyword}' IN BOOLEAN MODE))`), 'relevance'],
             
           ]
         },
@@ -55,18 +57,12 @@ class PropertyService {
           // ['pemilik_relevance', 'DESC']
         ],
         replacements: encodedKeywords.length?  [
-          `%${keyword}%`,
-          `${prefixedKeywords}`, 
-          `${prefixedKeywords}`, 
-          `${keyword}`,
 
           `${prefixedKeywords}`, 
           `${prefixedKeywords}`, 
           `%${keyword}%`,
 
         ] : [
-          `%${keyword}%`,
-          `${keyword}`,
           `%${keyword}%`
         ],
         

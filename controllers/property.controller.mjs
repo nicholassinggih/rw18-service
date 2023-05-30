@@ -18,7 +18,7 @@ router.get('/', function(req, res){
 router.get('/search', async function(req, res){
 
    const ps = new PropertyService();
-   res.json( await ps.search(req.query.keyword) );
+   res.json( await ps.search(req.query.keyword, req.query.offset, req.query.limit) );
 
 });
 
