@@ -250,7 +250,7 @@ const Property = sequelize.define('Property', {
         allowNull: true
     },
     nominal: {
-        type: DataTypes.DECIMAL,
+        type: DataTypes.VIRTUAL,
         allowNull: true
     },
     komersial: {
