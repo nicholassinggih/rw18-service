@@ -3,6 +3,14 @@ import * as Models from '../models/definitions.mjs';
 import svc from '../util.mjs';
 
 class PropertyService {
+
+  static selectCurrentFee = [Sequelize.literal(`(
+    SELECT nominal FROM 
+      (SELECT * from fee_history innerfh WHERE innerfh.property_id=property.id) fh INNER JOIN 
+      (SELECT property_id, MAX(start_date) AS latest_date FROM rw18.fee_history innerlt group by innerlt.property_id) latest 
+      ON fh.property_id = latest.property_id AND fh.start_date = latest.latest_date
+    )`), 'nominal'];
+
   async search(keyword, offset, limit) {
     var res = [];
     const emptyKeyword = svc.isEmptyString(keyword);
@@ -15,12 +23,7 @@ class PropertyService {
     )).join(" OR ");
 
     let includeAttributes = [
-      [Sequelize.literal(`(
-        SELECT nominal FROM 
-          (SELECT * from fee_history innerfh WHERE innerfh.property_id=property.id) fh INNER JOIN 
-          (SELECT property_id, MAX(start_date) AS latest_date FROM rw18.fee_history innerlt group by innerlt.property_id) latest 
-          ON fh.property_id = latest.property_id AND fh.start_date = latest.latest_date
-        )`), 'nominal'],
+      PropertyService.selectCurrentFee,
     ];
     if (!emptyKeyword) includeAttributes.push([Sequelize.literal(`((Pemilik.nama LIKE '%${keyword}%') * 7) + 
           (${blokNoMatchAttr}) * 2 + 
@@ -79,22 +82,28 @@ class PropertyService {
     return res;
   }
 
-    async createProperty(data) {
-      /* var res = null;
-      try {
-        res = await Models.Property.create({
-          blok: 'A',
-          no: 'A',
-          nominal: 1,
-          komersial: false,
-          rt: 1,
-          propertySoundex: 'TEST'
-        }); 
-      } catch (err) {
-        console.log(err);
-      }
-      return res; */
+  async getPropertyById(id) {
+    console.log("getPropertyById ", id)
+    var res = null;
+    try {
+      res = await Models.Property.findByPk(id, {
+        attributes: {
+          include: [ PropertyService.selectCurrentFee ]
+        },
+        include: [
+          {
+            model: Models.Pemilik, 
+          },
+          {
+            model: Models.Collector
+          },
+        ]
+      }); 
+    } catch (err) {
+      console.log(err);
     }
+    return res;
+  }
   
   }
   
