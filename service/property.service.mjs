@@ -21,6 +21,12 @@ class PropertyService {
         limit: +limit,
         attributes: {
           include: [
+            [Sequelize.literal(`(
+              SELECT nominal FROM 
+                (SELECT * from fee_history innerfh WHERE innerfh.property_id=property.id) fh INNER JOIN 
+                (SELECT property_id, MAX(start_date) AS latest_date FROM rw18.fee_history innerlt group by innerlt.property_id) latest 
+                ON fh.property_id = latest.property_id AND fh.start_date = latest.latest_date
+              )`), 'nominal'],
             [Sequelize.literal(`((Pemilik.nama LIKE '%${keyword}%') * 7) + 
               (${blokNoMatchAttr}) * 2 + 
               ${encodedKeywords.length ? "(MATCH (Property.phonetic) AGAINST('" + prefixedKeywords + "' IN BOOLEAN MODE) * 1.2) + " : ''} 
@@ -35,7 +41,7 @@ class PropertyService {
           },
           {
             model: Models.Collector
-          }
+          },
         ],
         where: {
           [Op.or]: [
