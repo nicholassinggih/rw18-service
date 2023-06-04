@@ -5,8 +5,7 @@ import svc from '../util.mjs';
 class PropertyService {
   async search(keyword, offset, limit) {
     var res = [];
-    if (svc.isEmptyString(keyword)) return res;
-
+    const emptyKeyword = svc.isEmptyString(keyword);
     const encodedKeywords = svc.encodeText(keyword);
     const prefixedKeywords = svc.breakIntoWords(encodedKeywords).map(w => `+${w}`).join(' ');
     const blokNoMatchAttr = (svc.breakIntoWords(keyword).flatMap(val => [
@@ -15,25 +14,26 @@ class PropertyService {
       ]
     )).join(" OR ");
 
+    let includeAttributes = [
+      [Sequelize.literal(`(
+        SELECT nominal FROM 
+          (SELECT * from fee_history innerfh WHERE innerfh.property_id=property.id) fh INNER JOIN 
+          (SELECT property_id, MAX(start_date) AS latest_date FROM rw18.fee_history innerlt group by innerlt.property_id) latest 
+          ON fh.property_id = latest.property_id AND fh.start_date = latest.latest_date
+        )`), 'nominal'],
+    ];
+    if (!emptyKeyword) includeAttributes.push([Sequelize.literal(`((Pemilik.nama LIKE '%${keyword}%') * 7) + 
+          (${blokNoMatchAttr}) * 2 + 
+          ${encodedKeywords.length ? "(MATCH (Property.phonetic) AGAINST('" + prefixedKeywords + "' IN BOOLEAN MODE) * 1.2) + " : ''} 
+          ${encodedKeywords.length ? "(MATCH (Collector.phonetic) AGAINST('" + prefixedKeywords + "' IN BOOLEAN MODE)) + " : ''} 
+          (MATCH (Pemilik.nama) AGAINST('${keyword}' IN BOOLEAN MODE))`), 'relevance']);
+
     try {
       res = await Models.Property.findAndCountAll({
         offset: +offset,
         limit: +limit,
         attributes: {
-          include: [
-            [Sequelize.literal(`(
-              SELECT nominal FROM 
-                (SELECT * from fee_history innerfh WHERE innerfh.property_id=property.id) fh INNER JOIN 
-                (SELECT property_id, MAX(start_date) AS latest_date FROM rw18.fee_history innerlt group by innerlt.property_id) latest 
-                ON fh.property_id = latest.property_id AND fh.start_date = latest.latest_date
-              )`), 'nominal'],
-            [Sequelize.literal(`((Pemilik.nama LIKE '%${keyword}%') * 7) + 
-              (${blokNoMatchAttr}) * 2 + 
-              ${encodedKeywords.length ? "(MATCH (Property.phonetic) AGAINST('" + prefixedKeywords + "' IN BOOLEAN MODE) * 1.2) + " : ''} 
-              ${encodedKeywords.length ? "(MATCH (Collector.phonetic) AGAINST('" + prefixedKeywords + "' IN BOOLEAN MODE)) + " : ''} 
-              (MATCH (Pemilik.nama) AGAINST('${keyword}' IN BOOLEAN MODE))`), 'relevance'],
-            
-          ]
+          include: includeAttributes
         },
         include: [
           {
@@ -43,7 +43,7 @@ class PropertyService {
             model: Models.Collector
           },
         ],
-        where: {
+        where: emptyKeyword? null : {
           [Op.or]: [
             //Sequelize.literal('MATCH (Pemilik.nama_soundex) AGAINST(?)'),
             encodedKeywords.length? Sequelize.literal('MATCH (Collector.phonetic) AGAINST(?)') : null,
@@ -57,20 +57,20 @@ class PropertyService {
             }))
           ]
         },
-        order: [
-          // ['exact_match', 'DESC'],
+        order: emptyKeyword? null : [
           ['relevance', 'DESC'],
-          // ['pemilik_relevance', 'DESC']
         ],
-        replacements: encodedKeywords.length?  [
+        replacements: !emptyKeyword? null : ( 
+          encodedKeywords.length?  [
 
-          `${prefixedKeywords}`, 
-          `${prefixedKeywords}`, 
-          `%${keyword}%`,
+            `${prefixedKeywords}`, 
+            `${prefixedKeywords}`, 
+            `%${keyword}%`,
 
-        ] : [
-          `%${keyword}%`
-        ],
+          ] : [
+            `%${keyword}%`
+          ] 
+        ),
         
       }) 
     } catch(err) {
