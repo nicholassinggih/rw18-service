@@ -63,7 +63,7 @@ class PropertyService {
         order: emptyKeyword? null : [
           ['relevance', 'DESC'],
         ],
-        replacements: !emptyKeyword? null : ( 
+        replacements: emptyKeyword? null : ( 
           encodedKeywords.length?  [
 
             `${prefixedKeywords}`, 
