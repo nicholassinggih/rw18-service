@@ -33,8 +33,8 @@ class PropertyService {
 
     try {
       res = await Models.Property.findAndCountAll({
-        offset: +offset,
-        limit: +limit,
+        offset: offset == null? null : +offset,
+        limit: limit == null? null : +limit,
         attributes: {
           include: includeAttributes
         },
