@@ -18,7 +18,11 @@ router.get('/', function(req, res){
 router.get('/search', async function(req, res){
 
    const ps = new PropertyService();
-   res.json( await ps.search(req.query.keyword, req.query.offset, req.query.limit) );
+   if (req.query.id) {
+      res.json( await ps.getPropertyById(req.query.id) );
+   } else {
+      res.json( await ps.search(req.query.keyword, req.query.offset, req.query.limit) );
+   }
 
 });
 
