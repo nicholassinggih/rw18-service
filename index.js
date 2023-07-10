@@ -5,8 +5,11 @@ import express from 'express';
 import multer from 'multer';
 import property from './controllers/property.controller.mjs';
 import DbStartup from './service/db-startup.mjs';
-
+import SchedulerService from './service/scheduler.service.mjs';
 const dbStartup = new DbStartup();
+const scheduler = new SchedulerService();
+
+scheduler.startBillGenerator();
 
 console.log(dbStartup);
 
