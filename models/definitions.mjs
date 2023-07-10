@@ -3,6 +3,32 @@ import ConnectionPool from '../service/connection-pool.mjs';
 const cp = new ConnectionPool();
 const sequelize = cp.sequelize;
 
+
+const Bill = sequelize.define('Bill', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    amount: {
+        type: DataTypes.DECIMAL,
+    },
+    paid: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true
+    },
+    billDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    }
+  }, {
+      underscored: true,
+      timestamps: false,
+      
+  tableName: 'bill'
+});
+  
+
 const Honor = sequelize.define('Honor', {
   id: {
       type: DataTypes.INTEGER,
@@ -279,12 +305,16 @@ FeeHistory.belongsTo(Property);
 Honor.belongsTo(Karyawan);
 MovementHistory.belongsTo(Property);
 MovementHistory.belongsTo(Pemilik);
+Bill.belongsTo(Property, {foreignKey: 'propertyId'});
+Bill.belongsTo(Pemilik, {foreignKey: 'pemilikId'});
+
 
 Pemilik.hasMany(Property, {foreignKey: 'pemilikId'});
 Collector.hasMany(Property, {foreignKey: 'collectorId'})
+Property.hasMany
 
 export {
-    Collector,
+    Bill, Collector,
     FeeHistory,
     Honor,
     Karyawan,
