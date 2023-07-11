@@ -4,6 +4,25 @@ const cp = new ConnectionPool();
 const sequelize = cp.sequelize;
 
 
+
+const Account = sequelize.define('Account', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    balance: {
+        type: DataTypes.DECIMAL,
+    },
+    
+  }, {
+      underscored: true,
+      timestamps: false,
+      
+  tableName: 'account'
+});
+  
+
 const Bill = sequelize.define('Bill', {
     id: {
         type: DataTypes.INTEGER,
@@ -298,20 +317,27 @@ const Property = sequelize.define('Property', {
     tableName: 'property'
 });
 
-Property.belongsTo(Pemilik, { foreignKey: 'pemilikId'});
-Property.belongsTo(Collector, {foreignKey: 'collectorId'});
 Pembayaran.belongsTo(Pemilik);
 FeeHistory.belongsTo(Property);
 Honor.belongsTo(Karyawan);
 MovementHistory.belongsTo(Property);
 MovementHistory.belongsTo(Pemilik);
-Bill.belongsTo(Property, {foreignKey: 'propertyId'});
-Bill.belongsTo(Pemilik, {foreignKey: 'pemilikId'});
 
-
+Property.belongsTo(Pemilik, { foreignKey: 'pemilikId'});
+Property.belongsTo(Collector, {foreignKey: 'collectorId'});
 Pemilik.hasMany(Property, {foreignKey: 'pemilikId'});
 Collector.hasMany(Property, {foreignKey: 'collectorId'})
-Property.hasMany
+
+Bill.belongsTo(Property, {foreignKey: 'propertyId'});
+Bill.belongsTo(Pemilik, {foreignKey: 'pemilikId'});
+Pemilik.hasMany(Bill, {foreignKey: 'pemilikId'});
+Property.hasMany(Bill, {foreignKey: 'propertyId'})
+
+Account.belongsTo(Property, { foreignKey: 'propertyId'});
+Account.belongsTo(Pemilik, { foreignKey: 'pemilikId'});
+Pemilik.hasMany(Account, {foreignKey: 'pemilikId'});
+Property.hasMany(Account, {foreignKey: 'propertyId'})
+
 
 export {
     Bill, Collector,
