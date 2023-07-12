@@ -214,6 +214,43 @@ const Collector = sequelize.define('Collector', {
 tableName: 'collector'
 });
 
+
+const Payment = sequelize.define('Payment', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    amount: {
+        type: DataTypes.DECIMAL,
+    },
+    fromName: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    fromAccountNo: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    fromBank: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    notes: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    phonetic: {
+        type: DataTypes.STRING,
+        allowNull: true
+    }
+  }, {
+      underscored: true,
+      timestamps: false,
+      
+  tableName: 'payment'
+});
+
 const Pembayaran = sequelize.define('Pembayaran', {
   id: {
       type: DataTypes.INTEGER,
@@ -338,13 +375,17 @@ Account.belongsTo(Pemilik, { foreignKey: 'pemilikId'});
 Pemilik.hasMany(Account, {foreignKey: 'pemilikId'});
 Property.hasMany(Account, {foreignKey: 'propertyId'})
 
+Payment.belongsTo(Account, {foreignKey: 'accountId'});
+Account.hasMany(Payment, {foreignKey: 'accountId'});
 
 export {
-    Bill, Collector,
+    Bill,
+    Collector,
     FeeHistory,
     Honor,
     Karyawan,
     MovementHistory,
+    Payment,
     Pembayaran,
     Pemilik,
     Property
