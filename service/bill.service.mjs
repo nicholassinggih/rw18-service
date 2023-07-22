@@ -1,12 +1,11 @@
 import * as Models from '../models/definitions.mjs';
 
 class BillService {
-  createBillForProp(prop) {
+  createBillForAccount(account) { 
     return {
-      propertyId: prop.id,
-      pemilikId: prop.pemilikId,
-      amount: prop.nominal,
-      paid: false,
+      accountId: account.id, 
+      amount: account.nominal, 
+      paid: false, 
       billDate: new Date()
     }
   }
