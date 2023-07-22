@@ -380,6 +380,7 @@ Payment.belongsTo(Account, {foreignKey: 'accountId'});
 Account.hasMany(Payment, {foreignKey: 'accountId'});
 
 export {
+    Account,
     Bill,
     Collector,
     FeeHistory,
