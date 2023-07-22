@@ -1,4 +1,5 @@
 import { CronJob } from 'cron';
+import AccountService from './account.service.mjs';
 import BillService from './bill.service.mjs';
 import PropertyService from './property.service.mjs';
 
@@ -9,10 +10,11 @@ class SchedulerService {
             function() {
                 const propSvc = new PropertyService();
                 const billSvc = new BillService();
+                const accSvc = new AccountService();
                 const newBills = [];
-                propSvc.search().then(allProps => {
-                    allProps.rows.forEach(prop => {
-                        newBills.push(billSvc.createBillForProp(prop));
+                accSvc.getAllActive().then(accounts => {
+                    accounts.forEach(acc => {
+                        newBills.push(billSvc.createBillForAccount(acc));
                     });
 
                     billSvc.saveBills(newBills);
