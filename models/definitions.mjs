@@ -14,6 +14,9 @@ const Account = sequelize.define('Account', {
     balance: {
         type: DataTypes.DECIMAL,
     },
+    active: {
+        type: DataTypes.BOOLEAN,
+    },
     
   }, {
       underscored: true,
