@@ -365,10 +365,8 @@ Property.belongsTo(Collector, {foreignKey: 'collectorId'});
 Pemilik.hasMany(Property, {foreignKey: 'pemilikId'});
 Collector.hasMany(Property, {foreignKey: 'collectorId'})
 
-Bill.belongsTo(Property, {foreignKey: 'propertyId'});
-Bill.belongsTo(Pemilik, {foreignKey: 'pemilikId'});
-Pemilik.hasMany(Bill, {foreignKey: 'pemilikId'});
-Property.hasMany(Bill, {foreignKey: 'propertyId'})
+Bill.belongsTo(Account, {foreignKey: 'accountId'});
+Account.hasMany(Bill, {foreignKey: 'accountId'});
 
 Account.belongsTo(Property, { foreignKey: 'propertyId'});
 Account.belongsTo(Pemilik, { foreignKey: 'pemilikId'});
