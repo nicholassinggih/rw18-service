@@ -18,6 +18,15 @@ class BillService {
     });
   }
 
+  async getUnpaidBillsForAccount(account) {
+    return await Models.Bill.findAll({
+      raw: true,
+      where: {
+        paid: false,
+        accountId: account.id
+      }
+    });
+  }
 
 }
   
