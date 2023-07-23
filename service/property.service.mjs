@@ -1,6 +1,6 @@
 import { Op, Sequelize } from 'sequelize';
 import * as Models from '../models/definitions.mjs';
-import svc from '../util.mjs';
+import util from '../util.mjs';
 
 class PropertyService {
 
@@ -13,10 +13,10 @@ class PropertyService {
 
   async search(keyword, offset, limit) {
     var res = [];
-    const emptyKeyword = svc.isEmptyString(keyword);
-    const encodedKeywords = svc.encodeText(keyword);
-    const prefixedKeywords = svc.breakIntoWords(encodedKeywords).map(w => `+${w}`).join(' ');
-    const blokNoMatchAttr = (svc.breakIntoWords(keyword).flatMap(val => [
+    const emptyKeyword = util.isEmptyString(keyword);
+    const encodedKeywords = util.encodeText(keyword);
+    const prefixedKeywords = util.breakIntoWords(encodedKeywords).map(w => `+${w}`).join(' ');
+    const blokNoMatchAttr = (util.breakIntoWords(keyword).flatMap(val => [
       `Property.blok LIKE '${val}%'`,
       `Property.no LIKE '${val}%'`
       ]
@@ -52,7 +52,7 @@ class PropertyService {
             encodedKeywords.length? Sequelize.literal('MATCH (Collector.phonetic) AGAINST(?)') : null,
             encodedKeywords.length? Sequelize.literal('MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)') : null,
             Sequelize.literal('Pemilik.nama LIKE ?'),
-            ...(svc.breakIntoWords(keyword).flatMap(val => {
+            ...(util.breakIntoWords(keyword).flatMap(val => {
               return [
                 Sequelize.literal(`Property.blok LIKE '${val}%'`),
                 Sequelize.literal(`Property.no LIKE '${val}%'`)
