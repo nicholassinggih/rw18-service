@@ -1,14 +1,13 @@
 import { CronJob } from 'cron';
 import AccountService from './account.service.mjs';
 import BillService from './bill.service.mjs';
-import PropertyService from './property.service.mjs';
 
 class SchedulerService {
     startBillGenerator() {
         new CronJob(
             '0 0 1 * *',    // every 1st of the month
+            // '*/10 * * * * *',    // every 10 secs
             function() {
-                const propSvc = new PropertyService();
                 const billSvc = new BillService();
                 const accSvc = new AccountService();
                 const newBills = [];
@@ -29,7 +28,6 @@ class SchedulerService {
             true,
             'Asia/Jakarta'
         );
-        // job.start() - See note below when to use this
     }
 
     createBillForProp(prop) {
