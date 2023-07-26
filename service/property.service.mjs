@@ -11,6 +11,47 @@ class PropertyService {
       ON fh.property_id = latest.property_id AND fh.start_date = latest.latest_date
     )`), 'nominal'];
 
+  static includeModels = {
+    include: [
+      {
+        model: Models.Pemilik, 
+      },
+      {
+        model: Models.Collector
+      },
+    ] 
+  };
+
+  createWhereCriteria(keyword) {
+    const emptyKeyword = util.isEmptyString(keyword);
+    const encodedKeywords = util.encodeText(keyword);
+    const prefixedKeywords = util.breakIntoWords(encodedKeywords).map(w => `+${w}`).join(' ');
+    return {
+      where: emptyKeyword? null : {
+        [Op.or]: [
+          encodedKeywords.length? Sequelize.literal('MATCH (Collector.phonetic) AGAINST(?)') : null,
+          encodedKeywords.length? Sequelize.literal('MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)') : null,
+          Sequelize.literal('Pemilik.nama LIKE ?'),
+          ...(util.breakIntoWords(keyword).flatMap(val => {
+            return [
+              Sequelize.literal(`Property.blok LIKE '${val}%'`),
+              Sequelize.literal(`Property.no LIKE '${val}%'`)
+            ];
+          }))
+        ]
+      },
+      replacements: emptyKeyword? null : ( 
+        encodedKeywords.length?  [
+          `${prefixedKeywords}`, 
+          `${prefixedKeywords}`, 
+          `%${keyword}%`,
+        ] : [
+          `%${keyword}%`
+        ] 
+      ),
+    }
+  }
+
   async search(keyword, offset, limit) {
     var res = [];
     const emptyKeyword = util.isEmptyString(keyword);
@@ -38,43 +79,11 @@ class PropertyService {
         attributes: {
           include: includeAttributes
         },
-        include: [
-          {
-            model: Models.Pemilik, 
-          },
-          {
-            model: Models.Collector
-          },
-        ],
-        where: emptyKeyword? null : {
-          [Op.or]: [
-            //Sequelize.literal('MATCH (Pemilik.nama_soundex) AGAINST(?)'),
-            encodedKeywords.length? Sequelize.literal('MATCH (Collector.phonetic) AGAINST(?)') : null,
-            encodedKeywords.length? Sequelize.literal('MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)') : null,
-            Sequelize.literal('Pemilik.nama LIKE ?'),
-            ...(util.breakIntoWords(keyword).flatMap(val => {
-              return [
-                Sequelize.literal(`Property.blok LIKE '${val}%'`),
-                Sequelize.literal(`Property.no LIKE '${val}%'`)
-              ];
-            }))
-          ]
-        },
+        ...PropertyService.includeModels,
         order: emptyKeyword? null : [
           ['relevance', 'DESC'],
         ],
-        replacements: emptyKeyword? null : ( 
-          encodedKeywords.length?  [
-
-            `${prefixedKeywords}`, 
-            `${prefixedKeywords}`, 
-            `%${keyword}%`,
-
-          ] : [
-            `%${keyword}%`
-          ] 
-        ),
-        
+        ...this.createWhereCriteria(keyword)
       }) 
     } catch(err) {
       console.log(err);
