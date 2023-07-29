@@ -6,9 +6,8 @@ const router = express.Router();
 router.get('/search', async function(req, res){
     const svc = new AccountService();
     if (req.query.id) {
-        res.json( await svc.getPropertyById(req.query.id) );
     } else {
-        res.json( await svc.search(req.query.keyword, req.query.offset, req.query.limit) );
+        res.json( await svc.searchByKeyword(req.query.keyword, req.query.offset, req.query.limit) );
     }
 });
 
