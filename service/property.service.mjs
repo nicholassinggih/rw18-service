@@ -22,16 +22,16 @@ class PropertyService {
     ] 
   };
 
-  createWhereCriteria(keyword) {
+  createWhereCriteria(keyword, prefix = '') {
     const emptyKeyword = util.isEmptyString(keyword);
     const encodedKeywords = util.encodeText(keyword);
     const prefixedKeywords = util.breakIntoWords(encodedKeywords).map(w => `+${w}`).join(' ');
     return {
       where: emptyKeyword? null : {
         [Op.or]: [
-          encodedKeywords.length? Sequelize.literal('MATCH (Collector.phonetic) AGAINST(?)') : null,
+          encodedKeywords.length? Sequelize.literal(`MATCH (\`${prefix}Collector\`.phonetic) AGAINST(?)`) : null,
           encodedKeywords.length? Sequelize.literal('MATCH (Property.phonetic) AGAINST(? IN BOOLEAN MODE)') : null,
-          Sequelize.literal('Pemilik.nama LIKE ?'),
+          Sequelize.literal(`\`${prefix}Pemilik\`.nama LIKE ?`),
           ...(util.breakIntoWords(keyword).flatMap(val => {
             return [
               Sequelize.literal(`Property.blok LIKE '${val}%'`),
