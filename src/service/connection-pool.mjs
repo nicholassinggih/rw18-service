@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize';
 
 class ConnectionPool { 
+    static connection = new ConnectionPool();
     
     constructor() {
         if (ConnectionPool.instance) {
