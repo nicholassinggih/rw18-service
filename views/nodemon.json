@@ -1,0 +1,5 @@
+{
+  "watch": ["src"],        // Watch the "src" directory for changes
+  "ext": "js,json",        // Watch for changes in JavaScript and JSON files
+  "exec": "node -L -e index.js" // Command to execute your Node.js application
+}
