@@ -8,7 +8,7 @@ class AccountService {
     })
   }
 
-  async search(criteria) {
+  async search(criteria, isRaw = true) {
     var res = [];
 
     let includeAttributes = [
@@ -16,7 +16,7 @@ class AccountService {
     ];
     try {
       res = await Models.Account.findAll({
-        raw: true,
+        raw: isRaw,
         attributes: {
           include: includeAttributes
         },
@@ -24,6 +24,9 @@ class AccountService {
           {
             model: Models.Property, 
           },
+          {
+            model: Models.Bill
+          }
         ],
         where: criteria,
       }) 
@@ -60,9 +63,28 @@ class AccountService {
     return this.search({
       propertyId: property.id,
       active: true,
-      pemilikId: property.pemilikId
-    })
+      pemilikId: property.pemilikId,
+    }, false)
   }
+
+  async getBills(account) { 
+    try {
+      return await Models.Account.findByPk(account.id, {
+        include: [{
+          model: Models.Bill, 
+          where: {
+            paid: 0
+          },
+          
+        
+        }],
+        order: [[Models.Bill, 'billDate', 'DESC']]
+      })
+    } catch (error) {
+      
+    }
+  }
+
   
 }
   
