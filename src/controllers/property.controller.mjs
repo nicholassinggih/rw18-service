@@ -1,4 +1,5 @@
 import express from 'express';
+import AccountService from '../service/account.service.mjs';
 import PropertyService from '../service/property.service.mjs';
 
 const router = express.Router();
@@ -12,8 +13,6 @@ var movies = [
 router.get('/', function(req, res){
     res.json(movies);
  });
-
-
  
 router.get('/search', async function(req, res){
 
@@ -23,6 +22,17 @@ router.get('/search', async function(req, res){
    } else {
       res.json( await ps.search(req.query.keyword, req.query.offset, req.query.limit) );
    }
+
+});
+
+router.get('/bills', async function(req, res){
+
+   const propertyId = req.query.id;
+   const pemilikId = req.query.pemilikId;
+   const accSvc = new AccountService();
+   const ps = new PropertyService();
+   const acc = await accSvc.getAccountForProp({id: propertyId, pemilikId: pemilikId});
+   res.json(acc[0].Bills );
 
 });
 

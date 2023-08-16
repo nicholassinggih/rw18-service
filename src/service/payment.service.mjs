@@ -5,24 +5,7 @@ import util from '../util.mjs';
 class PaymentService {
 
 
-  async getBills(account) {
-    try {
-      return await Models.Account.findByPk(account.id, {
-        include: [{
-          model: Models.Bill, 
-          where: {
-            paid: 0
-          },
-          
-        
-        }],
-        order: [[Models.Bill, 'billDate', 'DESC']]
-      })
-    } catch (error) {
-      
-    }
-  }
-
+  
   async addPayments(payment, account) {
     try {
       await ConnectionPool.connection.sequelize.transaction(async (trx) => {
@@ -60,8 +43,6 @@ class PaymentService {
           where: { id: acc.id },
           transaction: trx
         });
-
-
 
       })
     } catch (err) {
