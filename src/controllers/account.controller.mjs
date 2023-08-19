@@ -10,6 +10,11 @@ router.get('/search', async function(req, res){
             isRaw: false,
             includeModels: { bill: parseInt(req.query.accountOnly) === 1 ? false : true }
         }) );
+    } else if (req.query.propertyId && req.query.pemilikId) {
+        res.json( await svc.getByPropertyAndOwnerId( req.query.propertyId, req.query.pemilikId, {
+            isRaw: false,
+            includeModels: { bill: parseInt(req.query.accountOnly) === 1 ? false : true }
+        }) );
     } else {
         res.json( await svc.searchByKeyword(req.query.keyword, req.query.offset, req.query.limit) );
     }
