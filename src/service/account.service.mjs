@@ -23,7 +23,7 @@ class AccountService {
     let includeAttributes = [
       PropertyService.selectCurrentFee,
     ];
-    let include = [{ model: Models.Property }];
+    let include = [{ model: Models.Property}, { model: Models.Pemilik }];
     if (options.includeModels.bill) include.push({model: Models.Bill});
     try {
       res = await Models.Account.findAll({
