@@ -8,26 +8,30 @@ class AccountService {
     })
   }
 
-  async search(criteria, isRaw = true) {
+  async getById(id, options) {
+    return this.search({ id }, options);
+  }
+
+  async getByPropertyAndOwnerId(propertyId,  pemilikId, options) {
+    return this.search({ pemilikId, propertyId}, options);
+  }
+
+  async search(criteria, options = { isRaw: true, includeModels: { bill: true} }) {
     var res = [];
+    options.isRaw = options.isRaw ?? true;
 
     let includeAttributes = [
       PropertyService.selectCurrentFee,
     ];
+    let include = [{ model: Models.Property }];
+    if (options.includeModels.bill) include.push({model: Models.Bill});
     try {
       res = await Models.Account.findAll({
-        raw: isRaw,
+        raw: options.isRaw,
         attributes: {
           include: includeAttributes
         },
-        include: [
-          {
-            model: Models.Property, 
-          },
-          {
-            model: Models.Bill
-          }
-        ],
+        include,
         where: criteria,
       }) 
     } catch(err) {
@@ -67,21 +71,16 @@ class AccountService {
     }, false)
   }
 
-  async getBills(account) { 
+  async getBills(account, unpaidOnly) { 
     try {
-      return await Models.Account.findByPk(account.id, {
-        include: [{
-          model: Models.Bill, 
-          where: {
-            paid: 0
-          },
-          
-        
-        }],
+      let where = { accountId: account.id };
+      if (unpaidOnly) whereClause.paid = false;
+      return await Models.Bill.findAndCountAll({
+        where,
         order: [[Models.Bill, 'billDate', 'DESC']]
       })
     } catch (error) {
-      
+      console.log(error);
     }
   }
 
