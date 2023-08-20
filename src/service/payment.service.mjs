@@ -44,9 +44,11 @@ class PaymentService {
           transaction: trx
         });
 
-      })
+      });
+
     } catch (err) {
       console.log(err);
+      throw err; 
     }
   }
 
