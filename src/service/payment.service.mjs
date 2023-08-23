@@ -1,10 +1,74 @@
+import { Op, Sequelize } from 'sequelize';
 import * as Models from '../models/definitions.mjs';
 import ConnectionPool from '../service/connection-pool.mjs';
 import util from '../util.mjs';
 
 class PaymentService {
 
+  async search(criteria, offset, limit) {
+    const { accountId, keyword } = criteria;
 
+    let res = [];
+    let includeAttributes = [];
+    const emptyKeyword = util.isEmptyString(keyword);
+    const encodedKeywords = util.encodeText(keyword);
+    const prefixedKeywords = util.breakIntoWords(encodedKeywords).map(w => `+${w}`).join(' ');
+
+    if (!emptyKeyword) includeAttributes.push([
+          Sequelize.literal(`((Payment.from_name LIKE '%${keyword}%') * 7) + 
+          ((Payment.from_account_no LIKE '%${keyword}%') * 7) + 
+          ${encodedKeywords.length ? "(MATCH (Payment.phonetic) AGAINST('" + prefixedKeywords + "' IN BOOLEAN MODE) * 1.2) + " : ''} 
+          (MATCH (Payment.from_name) AGAINST('${keyword}' IN BOOLEAN MODE))`), 'relevance']);
+
+    let order = [ ['paymentDate', 'DESC'] ];
+    if (!emptyKeyword) order.push(['relevance', 'DESC']);
+    try {
+      res = await Models.Payment.findAndCountAll({
+        offset: offset == null? null : +offset,
+        limit: limit == null? null : +limit,
+        attributes: {
+          include: includeAttributes
+        },
+        order,
+        ...this.createWhereCriteria(accountId, keyword)
+      }) 
+    } catch(err) {
+      console.log(err);
+    }
+    return res;
+  }
+
+  createWhereCriteria(accountId, keyword, prefix = '') {
+    const emptyKeyword = util.isEmptyString(keyword);
+    const encodedKeywords = util.encodeText(keyword);
+    const prefixedKeywords = util.breakIntoWords(encodedKeywords).map(w => `+${w}`).join(' ');
+    return {
+      where: {
+        [Op.and]: [
+          { accountId: accountId },
+          emptyKeyword? null : {
+            [Op.or]: [
+              encodedKeywords.length? Sequelize.literal(`MATCH (\`${prefix}Payment\`.phonetic) AGAINST(?)`) : null,
+              Sequelize.literal(`\`${prefix}Payment\`.from_name LIKE ?`),
+              ...(util.breakIntoWords(keyword).flatMap(val => {
+                return [
+                  Sequelize.literal(`Payment.from_account_no LIKE '${val}%'`),
+                  Sequelize.literal(`Payment.from_bank LIKE '${val}%'`)
+                ];
+              }))
+            ]
+          }
+      ]},
+      replacements: emptyKeyword? null : ( 
+        encodedKeywords.length?  [
+          `${prefixedKeywords}`, 
+          `%${keyword}%`,
+        ] : [
+          `%${keyword}%`
+        ] 
+      ),
+    }
+  }
   
   async addPayments(payment, account) {
     try {

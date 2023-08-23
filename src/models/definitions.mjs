@@ -243,6 +243,10 @@ const Payment = sequelize.define('Payment', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    paymentDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
     phonetic: {
         type: DataTypes.STRING,
         allowNull: true
