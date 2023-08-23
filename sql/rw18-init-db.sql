@@ -238,7 +238,11 @@ CREATE TABLE `payment` (
   `notes` varchar(250) DEFAULT NULL,
   `phonetic` varchar(45) DEFAULT NULL,
   `payment_date` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `idx_payment_from_bank` (`from_bank`),
+  FULLTEXT KEY `idx_payment_from_account_no` (`from_account_no`),
+  FULLTEXT KEY `idx_payment_from_name` (`from_name`),
+  FULLTEXT KEY `idx_payment_phonetic` (`phonetic`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -357,4 +361,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-08-22 22:49:28
+-- Dump completed on 2023-08-23 10:29:35

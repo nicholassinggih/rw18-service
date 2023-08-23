@@ -24,4 +24,18 @@ router.post('/add', async function(req, res){
     });
 });
 
+
+
+router.get('/search', async function(req, res){
+
+    const ps = new PaymentService();
+    res.json( await ps.search({ 
+            accountId: req.query.id, 
+            keyword: req.query.keyword
+        }, 
+        req.query.offset, 
+        req.query.limit) );
+ 
+});
+
 export default router;
