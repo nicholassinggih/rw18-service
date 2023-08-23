@@ -30,7 +30,7 @@ router.get('/search', async function(req, res){
 
     const ps = new PaymentService();
     res.json( await ps.search({ 
-            accountId: req.query.id, 
+            accountId: req.query.accountId, 
             keyword: req.query.keyword
         }, 
         req.query.offset, 
