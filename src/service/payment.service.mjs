@@ -78,9 +78,10 @@ class PaymentService {
        
         await Models.Payment.create(payment, {transaction: trx});
 
-        const acc = await Models.Account.findByPk(account.id, {
+        const acc = await Models.Account.findByPk(parseInt(account.id), {
           include: [{
             model: Models.Bill,
+            required: false,
             where: {
               paid: false
             },
