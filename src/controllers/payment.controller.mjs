@@ -5,9 +5,9 @@ const router = express.Router();
 
 router.post('/add', async function(req, res){
     const svc = new PaymentService();
-    const { accountId, fromName, fromAccountNo, fromBank, amount, notes } = req.body;
+    const { accountId, fromName, fromAccountNo, fromBank, amount, notes, paymentDate } = req.body;
     try {
-        await svc.addPayments({fromName, fromAccountNo, fromBank, amount, notes}, {
+        await svc.addPayments({fromName, fromAccountNo, fromBank, amount, notes, paymentDate }, {
             id: accountId
         });
     } catch (err) {
