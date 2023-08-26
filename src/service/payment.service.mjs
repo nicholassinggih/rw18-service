@@ -75,7 +75,8 @@ class PaymentService {
       await ConnectionPool.connection.sequelize.transaction(async (trx) => {
         payment.accountId = account.id;
         payment.phonetic = util.encodeText(`${payment.fromName} ${payment.fromAccountNo} ${payment.fromBank} ${payment.notes}`);
-       
+        payment.paymentDate ??= new Date();
+        
         await Models.Payment.create(payment, {transaction: trx});
 
         const acc = await Models.Account.findByPk(parseInt(account.id), {
