@@ -21,10 +21,11 @@ router.get('/generate', async function(req, res){
     const svc = new BillService();
     try {
         await svc.generateBills();
+        res.json({success: true});
+
     } catch (err) {
         res.json( {success: false, err} );
     }
-    res.json({success: true});
 });
 
 

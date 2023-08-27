@@ -16,7 +16,7 @@ class AccountService {
     return this.search({ pemilikId, propertyId}, options);
   }
 
-  async search(criteria, options = { isRaw: true, includeModels: { bill: true} }) {
+  async search(criteria, options = { isRaw: false, includeModels: { bill: true} }) {
     var res = [];
     options.isRaw = options.isRaw ?? true;
 
@@ -62,14 +62,6 @@ class AccountService {
     }
     return res;
   } 
-
-  async getAccountForProp(property) {
-    return this.search({
-      propertyId: property.id,
-      active: true,
-      pemilikId: property.pemilikId,
-    }, false)
-  }
 
   async getBills(account, unpaidOnly) { 
     try {
