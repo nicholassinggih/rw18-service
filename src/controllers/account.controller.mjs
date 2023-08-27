@@ -2,6 +2,10 @@ import express from 'express';
 import AccountService from '../service/account.service.mjs';
 
 const router = express.Router();
+router.get('/actives', async function(req, res) {
+    const svc = new AccountService();
+    res.json(await svc.getAllActive());
+})
 
 router.get('/search', async function(req, res){
     const svc = new AccountService();
