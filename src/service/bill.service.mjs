@@ -1,4 +1,6 @@
 import * as Models from '../models/definitions.mjs';
+import AccountService from '../service/account.service.mjs';
+import ConnectionPool from '../service/connection-pool.mjs';
 
 class BillService {
   createBillForAccount(account) { 
@@ -11,14 +13,13 @@ class BillService {
   }
 
   async generateBills() {
-    const billSvc = new BillService();
     const accSvc = new AccountService();
     const newBills = [];
     try {
-      const accounts = await accSvc.getAllActive();
+      const accounts = (await accSvc.getAllActive()).map(x => x.dataValues);
       const updatedAccounts = [];
       accounts.forEach(acc => {
-          const bill = billSvc.createBillForAccount(acc)
+          const bill = this.createBillForAccount(acc)
           newBills.push(bill);
           if (acc.balance >= bill.amount) {
               acc.balance -= bill.amount;
@@ -26,6 +27,7 @@ class BillService {
               updatedAccounts.push(acc);
           }
       });
+
       await ConnectionPool.connection.sequelize.transaction(async (trx) => {
           await Models.Account.bulkCreate(updatedAccounts, {transaction: trx, updateOnDuplicate: ['balance']})
           await Models.Bill.bulkCreate(newBills, {transaction: trx});
