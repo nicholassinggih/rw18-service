@@ -17,4 +17,15 @@ router.get('/search', async function(req, res){
     res.json( bills );
 });
 
+router.get('/generate', async function(req, res){
+    const svc = new BillService();
+    try {
+        await svc.generateBills();
+    } catch (err) {
+        res.json( {success: false, err} );
+    }
+    res.json({success: true});
+});
+
+
 export default router;

@@ -10,31 +10,33 @@ class BillService {
     }
   }
 
-  generateBills() {
+  async generateBills() {
     const billSvc = new BillService();
     const accSvc = new AccountService();
     const newBills = [];
-    accSvc.getAllActive().then(async accounts => {
-        const updatedAccounts = [];
-        accounts.forEach(acc => {
-            const bill = billSvc.createBillForAccount(acc)
-            newBills.push(bill);
-            if (acc.balance >= bill.amount) {
-                acc.balance -= bill.amount;
-                bill.paid = true;
-                updatedAccounts.push(acc);
-            }
-        });
-        await ConnectionPool.connection.sequelize.transaction(async (trx) => {
-            await Models.Account.bulkCreate(updatedAccounts, {transaction: trx, updateOnDuplicate: ['balance']})
-            await Models.Bill.bulkCreate(newBills, {transaction: trx});
-        });
+    try {
+      const accounts = await accSvc.getAllActive();
+      const updatedAccounts = [];
+      accounts.forEach(acc => {
+          const bill = billSvc.createBillForAccount(acc)
+          newBills.push(bill);
+          if (acc.balance >= bill.amount) {
+              acc.balance -= bill.amount;
+              bill.paid = true;
+              updatedAccounts.push(acc);
+          }
+      });
+      await ConnectionPool.connection.sequelize.transaction(async (trx) => {
+          await Models.Account.bulkCreate(updatedAccounts, {transaction: trx, updateOnDuplicate: ['balance']})
+          await Models.Bill.bulkCreate(newBills, {transaction: trx});
+      });
 
-    }).catch(err => {
+    } catch(err) {
         console.log(err);
         // TODO: do something here for the error
-    });
-    
+        throw err;
+    }
+    return true
   }
   
   saveBills(billList) {
