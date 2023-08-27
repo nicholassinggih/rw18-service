@@ -1,4 +1,6 @@
 import { CronJob } from 'cron';
+import * as Models from '../models/definitions.mjs';
+import ConnectionPool from '../service/connection-pool.mjs';
 import AccountService from './account.service.mjs';
 import BillService from './bill.service.mjs';
 
@@ -11,12 +13,22 @@ class SchedulerService {
                 const billSvc = new BillService();
                 const accSvc = new AccountService();
                 const newBills = [];
-                accSvc.getAllActive().then(accounts => {
+                accSvc.getAllActive().then(async accounts => {
+                    const updatedAccounts = [];
                     accounts.forEach(acc => {
-                        newBills.push(billSvc.createBillForAccount(acc));
+                        const bill = billSvc.createBillForAccount(acc)
+                        newBills.push(bill);
+                        if (acc.balance >= bill.amount) {
+                            acc.balance -= bill.amount;
+                            bill.paid = true;
+                            updatedAccounts.push(acc);
+                        }
+                    });
+                    await ConnectionPool.connection.sequelize.transaction(async (trx) => {
+                        await Models.Account.bulkCreate(updatedAccounts, {transaction: trx, updateOnDuplicate: ['balance']})
+                        await Models.Bill.bulkCreate(newBills, {transaction: trx});
                     });
 
-                    billSvc.saveBills(newBills);
                 }).catch(err => {
                     console.log(err);
                     // TODO: do something here for the error
